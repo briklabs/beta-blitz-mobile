@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "vv-react-native",
-    "slug": "vv-react-native",
+    "slug": "briklabs-vv-training-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.expovalle.briklabsvvtrainingapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4312cb3e-aead-49cb-908d-1037189fccf9"
+      }
+    },
+    "owner": "expovalle"
   }
 }

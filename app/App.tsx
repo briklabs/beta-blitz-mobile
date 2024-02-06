@@ -27,7 +27,6 @@ const App = () => {
           options={{ title: "Workout" }}
         />
       </Stack.Navigator>
-      <StatusBar style="auto" />
     </NavigationContainer>
   );
 };
