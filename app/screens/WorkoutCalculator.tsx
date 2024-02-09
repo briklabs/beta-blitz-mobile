@@ -123,12 +123,15 @@ const WorkoutCalculator = ({
     );
   };
 
+  const disableBtn = useMemo(() => goal <= 0, []);
+  const disableAddBtn = useMemo(() => disableBtn || !value, []);
+
   return (
-    <View className="flex-1 flex-col p-8">
-      <View className="flex-1 items-center flex-col justify-center">
+    <View className="flex-1 flex-col p-8 gap-4">
+      <View className="flex-1 items-center flex-col justify-center gap-4">
         <Text
           className={`text-[12rem] font-black ${
-            total >= goal ? "text-lime-500" : ""
+            goal && total >= goal ? "text-lime-500" : ""
           }`}
         >
           {total}
@@ -147,10 +150,14 @@ const WorkoutCalculator = ({
           setItems={setItems}
         />
       </View>
-      <View className="flex-row justify-center">
-        <Button title="Add" onPress={addRoute} />
-        <Button title="Remove" onPress={removeLastRoute} />
-        <Button title="Reset" onPress={resetCalculator} />
+      <View className="flex-row justify-center gap-2">
+        <Button title="Add" disabled={disableAddBtn} onPress={addRoute} />
+        <Button
+          title="Remove"
+          disabled={disableBtn}
+          onPress={removeLastRoute}
+        />
+        <Button title="Reset" disabled={disableBtn} onPress={resetCalculator} />
       </View>
     </View>
   );
