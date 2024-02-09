@@ -26,7 +26,7 @@ function App() {
             component={HomeScreen}
             options={{
               headerStyle: {
-                height: 120,
+                height: 80,
               },
               headerTitleAlign: "left",
               headerTitle: () => (
@@ -47,7 +47,7 @@ function App() {
                     <Text className=" text-xs text-neutral-400">
                       Welcome back!
                     </Text>
-                    <Text className=" text-sm font-semibold">
+                    <Text className=" text-sm font-medium">
                       Let's get moving 💪🏽
                     </Text>
                   </View>
