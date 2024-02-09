@@ -55,11 +55,11 @@ function App() {
               ),
               headerRight: () => (
                 <Pressable onPress={() => console.log("hello")}>
-                  <Icon name="notifications-none" />
+                  <Icon name="bell" type="feather" />
                 </Pressable>
               ),
               headerRightContainerStyle: {
-                padding: 10,
+                paddingRight: 20,
               },
             }}
           />
