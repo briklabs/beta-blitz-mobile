@@ -1,21 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Button, Text, Modal, Alert } from "react-native";
 import { ScreenProps } from "../utils/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import DropDownPicker from "react-native-dropdown-picker";
+import useRouteCounter from "../features/useBetaBlitz";
 
-const WorkoutCalculator = ({
-  navigation,
-}: ScreenProps<"WorkoutCalculator">) => {
-  const [goal, setGoal] = useState<number>(0);
-  const [completedRoutes, setCompletedRoutes] = useState<number[]>([]);
-  const total = useMemo(
-    () => completedRoutes.reduce((prev, curr) => curr + prev, 0),
-    [completedRoutes]
-  );
-
-  const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
-  const [value, setValue] = useState(null);
+const BetaBlitzScreen = ({ navigation }: ScreenProps<"BetaBlitzScreen">) => {
+  const [value, setValue] = useState(0);
   const [items, setItems] = useState([
     { label: "V0/V1", value: 1 },
     { label: "V2", value: 2 },
@@ -23,46 +13,10 @@ const WorkoutCalculator = ({
     { label: "V4", value: 4 },
     { label: "V5", value: 5 },
   ]);
+  const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    const loadPersistedData = async () => {
-      try {
-        const storedGoal = await AsyncStorage.getItem("goal");
-        const storedCompletedRoutes = await AsyncStorage.getItem(
-          "completedRoutes"
-        );
-
-        if (storedGoal !== null) {
-          setGoal(Number(storedGoal));
-        }
-
-        if (storedCompletedRoutes !== null) {
-          setCompletedRoutes(JSON.parse(storedCompletedRoutes));
-        }
-      } catch (error) {
-        console.error("Error loading persisted data:", error);
-      }
-    };
-
-    loadPersistedData();
-  }, []);
-
-  useEffect(() => {
-    const saveData = async () => {
-      try {
-        await AsyncStorage.setItem("goal", goal.toString());
-        await AsyncStorage.setItem(
-          "completedRoutes",
-          JSON.stringify(completedRoutes)
-        );
-      } catch (error) {
-        console.error("Error saving data:", error);
-      }
-    };
-
-    saveData();
-  }, [goal, completedRoutes]);
-
+  const { goal, total, resetCalculator, setGoal, removeLastRoute, addRoute } =
+    useRouteCounter();
   const [askReset, setAskReset] = useState(true);
   useEffect(() => {
     if (askReset && goal && total >= goal) {
@@ -81,21 +35,6 @@ const WorkoutCalculator = ({
       );
     }
   }, [goal, total]);
-
-  const addRoute = () => {
-    if (!value || isNaN(value)) return;
-    setCompletedRoutes((completed) => [...completed, value]);
-    setIsPickerVisible(false);
-  };
-
-  const removeLastRoute = () => {
-    setCompletedRoutes((completed) => completed.slice(0, -1));
-  };
-
-  const resetCalculator = () => {
-    setCompletedRoutes([]);
-    setAskReset(true);
-  };
 
   const goToHomeScreen = () => {
     navigation.navigate("HomeScreen");
@@ -151,7 +90,11 @@ const WorkoutCalculator = ({
         />
       </View>
       <View className="flex-row justify-center gap-2">
-        <Button title="Add" disabled={disableAddBtn} onPress={addRoute} />
+        <Button
+          title="Add"
+          disabled={disableAddBtn}
+          onPress={() => addRoute(value)}
+        />
         <Button
           title="Remove"
           disabled={disableBtn}
@@ -163,4 +106,4 @@ const WorkoutCalculator = ({
   );
 };
 
-export default WorkoutCalculator;
+export default BetaBlitzScreen;

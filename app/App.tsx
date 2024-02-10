@@ -3,18 +3,14 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "./screens/HomeScreen";
-import WorkoutCalculator from "./screens/WorkoutCalculator";
+import BetaBlitzScreen from "./screens/BetaBlitzScreen";
 import { RootStackParamList } from "./utils/types";
 import { registerRootComponent } from "expo";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Avatar, Header, Icon } from "@rneui/themed";
+import { Avatar, Icon } from "@rneui/themed";
 import { Pressable, Text, View } from "react-native";
 
 const Stack = createStackNavigator<RootStackParamList>();
-
-function AppHeader() {
-  return <Header />;
-}
 
 function App() {
   return (
@@ -64,9 +60,9 @@ function App() {
             }}
           />
           <Stack.Screen
-            name="WorkoutCalculator"
-            component={WorkoutCalculator}
-            options={{ title: "Workout" }}
+            name="BetaBlitzScreen"
+            component={BetaBlitzScreen}
+            options={{ title: "Beta Blitz" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

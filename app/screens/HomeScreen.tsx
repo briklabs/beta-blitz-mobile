@@ -2,20 +2,30 @@ import React from "react";
 import { View, Pressable, ScrollView, Text } from "react-native";
 import { ScreenProps } from "../utils/types";
 import { Avatar, Button, Icon } from "@rneui/themed";
+import useBetaBlitz from "../features/useBetaBlitz";
+import colors from "tailwindcss/colors";
 
 function WorkoutProgress() {
+  const { total, goal } = useBetaBlitz();
+  const subtitle = total
+    ? `${total - goal} route points left`
+    : "Time attack route counter";
   return (
     <View className="flex-row justify-between items-center flex-1 p-4">
       <View className="gap-2">
-        <Text className="text-white text-xl font-medium">Workout Progress</Text>
-        <Text className="text-neutral-400">12 Exercises left</Text>
+        <Text className="text-white text-xl font-medium">Beta Blitz</Text>
+        <Text className="text-neutral-400">{subtitle}</Text>
       </View>
-      <Avatar
-        size={60}
-        rounded
-        title="14"
-        containerStyle={{ borderColor: "#f44344", borderWidth: 4 }}
-      />
+      {total ? (
+        <Avatar
+          size={60}
+          rounded
+          title={String(total)}
+          containerStyle={{ borderColor: colors.amber[400], borderWidth: 4 }}
+        />
+      ) : (
+        <Icon name="zap" type="feather" color={colors.yellow[400]} />
+      )}
     </View>
   );
 }
@@ -31,7 +41,7 @@ const HomeScreen = ({ navigation }: ScreenProps<"HomeScreen">) => {
               borderRadius: 20,
               backgroundColor: "#111",
             }}
-            onPress={() => navigation.navigate("WorkoutCalculator")}
+            onPress={() => navigation.navigate("BetaBlitzScreen")}
           />
         </View>
       </ScrollView>
