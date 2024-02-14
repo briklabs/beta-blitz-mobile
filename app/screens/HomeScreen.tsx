@@ -8,7 +8,7 @@ import colors from "tailwindcss/colors";
 function WorkoutProgress() {
   const { total, goal } = useBetaBlitz();
   const subtitle = total
-    ? `${total - goal} route points left`
+    ? `${goal - total} route points to go, let's go!`
     : "Time attack route counter";
   return (
     <View className="flex-row justify-between items-center flex-1 p-4">
@@ -46,13 +46,13 @@ const HomeScreen = ({ navigation }: ScreenProps<"HomeScreen">) => {
         </View>
       </ScrollView>
       <View className="flex-row py-6 justify-evenly gap-8 bg-white">
-        <Pressable>
+        <Pressable disabled>
           <Icon name="home" type="feather" />
         </Pressable>
-        <Pressable>
+        <Pressable disabled>
           <Icon name="weight-lifter" type="material-community" />
         </Pressable>
-        <Pressable>
+        <Pressable disabled>
           <Icon name="settings" type="feather" />
         </Pressable>
       </View>
