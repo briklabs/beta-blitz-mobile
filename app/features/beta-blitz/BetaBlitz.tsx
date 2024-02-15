@@ -1,6 +1,8 @@
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
+import { BetaBlitzContext } from "./BetaBlitzContext";
+import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addMilliseconds, format } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
 
 interface State {
   goal: number;
@@ -34,7 +36,7 @@ class AsyncBetaBlitz {
   };
 }
 
-export default function useBetaBlitz() {
+export default function BetaBlitz({ children }: { children: ReactNode }) {
   const asyncBetaBlitz = new AsyncBetaBlitz();
   const [state, setState] = useState<State>(asyncBetaBlitz.defaultState);
   const total = useMemo(
@@ -50,13 +52,19 @@ export default function useBetaBlitz() {
     init();
   }, []);
 
-  const addRoute = (value: number) => {
+  const addRoute = () => {
     if (!value || isNaN(value)) return;
     const completedRoutes = [...state.completedRoutes, value];
     setState((s) => ({
       ...s,
       completedRoutes,
-      startTimestamp: s.startTimestamp ?? Date.now(),
+    }));
+  };
+
+  const startSession = () => {
+    setState((s) => ({
+      ...s,
+      startTimestamp: Date.now(),
     }));
   };
 
@@ -72,6 +80,7 @@ export default function useBetaBlitz() {
   const resetCalculator = () => {
     setState(() => asyncBetaBlitz.defaultState);
     setElapsedTime(0);
+    setValue(0);
   };
 
   const goal = useMemo(() => state.goal, [state.goal]);
@@ -126,16 +135,69 @@ export default function useBetaBlitz() {
     return () => clearInterval(intervalId);
   }, [state.startTimestamp, state.endTimestamp]);
 
-  const stopwatch = format(addMilliseconds(0, elapsedTime), "mm:ss");
+  const stopwatch = useMemo(
+    () => format(addMilliseconds(0, elapsedTime), "mm:ss"),
+    [elapsedTime]
+  );
+  const inProgress = useMemo(() => !!elapsedTime, [elapsedTime]);
 
-  return {
+  const [value, setValue] = useState(0);
+  const items = [
+    { label: "V0/V1", value: 1 },
+    { label: "V2", value: 2 },
+    { label: "V3", value: 3 },
+    { label: "V4", value: 4 },
+    { label: "V5", value: 5 },
+    { label: "V6", value: 6 },
+    { label: "V7", value: 7 },
+    { label: "V8", value: 8 },
+    { label: "V9", value: 9 },
+  ];
+
+  const [askReset, setAskReset] = useState(true);
+  useEffect(() => {
+    if (askReset && goal && total >= goal) {
+      Alert.alert(
+        "Goal achieved!",
+        "Do you want to restart?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+            onPress: () => setAskReset(false),
+          },
+          { text: "OK", onPress: resetCalculator },
+        ],
+        { cancelable: true }
+      );
+    }
+  }, [goal, total]);
+
+  const [visibleGoalDialog, setVisibleGoalDialog] = useState(false);
+  function toggleGoalDialog() {
+    setVisibleGoalDialog((bool) => !bool);
+  }
+  const ctx = {
     goal,
-    setGoal,
-    completedRoutes,
     total,
+    completedRoutes,
+    value,
     addRoute,
     removeRouteByIndex,
     resetCalculator,
+    toggleGoalDialog,
     stopwatch,
+    startSession,
+    inProgress,
+    visibleGoalDialog,
+    setGoal,
+    setValue,
+    items,
   };
+
+  return (
+    <BetaBlitzContext.Provider value={ctx}>
+      {children}
+    </BetaBlitzContext.Provider>
+  );
 }

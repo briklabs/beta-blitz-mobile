@@ -1,30 +1,26 @@
 import React from "react";
-import { View, Pressable, ScrollView, Text } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import { ScreenProps } from "../utils/types";
-import { Avatar, Button, Icon } from "@rneui/themed";
-import useBetaBlitz from "../features/useBetaBlitz";
 import colors from "tailwindcss/colors";
+import BetaBlitz from "../features/beta-blitz/BetaBlitz";
+import { useBetaBlitzContext } from "../features/beta-blitz/BetaBlitzContext";
+import { Avatar, Icon, Text } from "react-native-paper";
 
 function WorkoutProgress() {
-  const { total, goal } = useBetaBlitz();
+  const { total, goal } = useBetaBlitzContext();
   const subtitle = total
     ? `${goal - total} route points to go, let's go!`
     : "Time attack route counter";
   return (
-    <View className="flex-row justify-between items-center flex-1 p-4">
+    <View className="flex-row justify-between items-center flex-1 p-4 border rounded-xl">
       <View className="gap-2">
-        <Text className="text-white text-xl font-medium">Beta Blitz</Text>
-        <Text className="text-neutral-400">{subtitle}</Text>
+        <Text variant="headlineSmall">Beta Blitz</Text>
+        <Text>{subtitle}</Text>
       </View>
       {total ? (
-        <Avatar
-          size={60}
-          rounded
-          title={String(total)}
-          containerStyle={{ borderColor: colors.amber[400], borderWidth: 4 }}
-        />
+        <Avatar.Text size={60} label={String(total)} />
       ) : (
-        <Icon name="zap" type="feather" color={colors.yellow[400]} />
+        <Icon source="lightning-bolt" size={48} color={colors.yellow[400]} />
       )}
     </View>
   );
@@ -35,27 +31,13 @@ const HomeScreen = ({ navigation }: ScreenProps<"HomeScreen">) => {
     <View className="flex-1">
       <ScrollView>
         <View className="p-4">
-          <Button
-            title={<WorkoutProgress />}
-            buttonStyle={{
-              borderRadius: 20,
-              backgroundColor: "#111",
-            }}
-            onPress={() => navigation.navigate("BetaBlitzScreen")}
-          />
+          <BetaBlitz>
+            <Pressable onPress={() => navigation.navigate("BetaBlitzScreen")}>
+              <WorkoutProgress />
+            </Pressable>
+          </BetaBlitz>
         </View>
       </ScrollView>
-      <View className="flex-row py-6 justify-evenly gap-8 bg-white">
-        <Pressable disabled>
-          <Icon name="home" type="feather" />
-        </Pressable>
-        <Pressable disabled>
-          <Icon name="weight-lifter" type="material-community" />
-        </Pressable>
-        <Pressable disabled>
-          <Icon name="settings" type="feather" />
-        </Pressable>
-      </View>
     </View>
   );
 };
