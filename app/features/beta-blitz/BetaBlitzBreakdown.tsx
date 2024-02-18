@@ -18,9 +18,9 @@ export default function BetaBlitzBreakdown() {
       }, {} as Record<string, number>);
   }, [completedRoutes]);
   return (
-    <View className="flex-1 gap-2">
+    <View style={{ flex: 1, gap: 4 }}>
       <Text variant="titleSmall">Breakdown</Text>
-      <ScrollView contentContainerClassName="gap-2">
+      <ScrollView contentContainerStyle={{ gap: 2 }}>
         {Object.entries(data).map(([label, value], i) => (
           <View key={i}>
             <Text variant="labelSmall">{label} routes</Text>

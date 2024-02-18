@@ -15,12 +15,18 @@ export default function BetaBlitzCompletedRoutes() {
   );
 
   return (
-    <View className="bg-white rounded p-4 h-96 gap-2">
+    <View style={{ padding: 4, gap: 2 }}>
       <Text variant="titleSmall">Completed Routes</Text>
-      <ScrollView contentContainerClassName="gap-2">
+      <ScrollView contentContainerStyle={{ gap: 2 }}>
         {completed.map((cr, i) => (
           <View
-            className="flex-row justify-between items-center p-1 pl-4 bg-neutral-100 rounded"
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: 2,
+              paddingLeft: 4,
+            }}
             key={i}
           >
             <Text variant="bodyLarge">{cr}</Text>

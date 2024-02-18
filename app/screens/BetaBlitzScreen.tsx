@@ -14,19 +14,21 @@ import BetaBlitzGoalDialog from "../features/beta-blitz/BetaBlitzGoalDialog";
 const BetaBlitzScreen = ({ navigation }: ScreenProps<"BetaBlitzScreen">) => {
   return (
     <BetaBlitz>
-      <View className="flex-1 flex-col p-4 gap-4">
-        <View className="flex-1 gap-4">
-          <View className="flex-row bg-white rounded p-4 gap-4 h-48">
+      <View style={{ flex: 1, padding: 8, gap: 8 }}>
+        <View style={{ flex: 1, gap: 4 }}>
+          <View
+            style={{ flexDirection: "row", padding: 8, gap: 8, height: 160 }}
+          >
             <BetaBlitzProgress />
             <BetaBlitzBreakdown />
           </View>
-          <View className="gap-4 flex-row">
+          <View style={{ gap: 4, flexDirection: "row" }}>
             <BetaBlitzStopwatch />
             <BetaBlitzHardestRoute />
           </View>
           <BetaBlitzCompletedRoutes />
         </View>
-        <View className="bg-white p-4 rounded gap-2">
+        <View style={{ padding: 4, gap: 8 }}>
           <BetaBlitzRouteOptions />
           <BetaBlitzActions />
         </View>

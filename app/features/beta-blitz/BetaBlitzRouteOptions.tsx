@@ -4,9 +4,10 @@ import { useBetaBlitzContext } from "./BetaBlitzContext";
 import { Button } from "react-native-paper";
 
 export default function BetaBlitzRouteOptions() {
-  const { items, setValue, value } = useBetaBlitzContext();
+  const { items, setValue, value, inProgress } = useBetaBlitzContext();
+  if (!inProgress) return <></>;
   return (
-    <ScrollView horizontal contentContainerClassName="gap-1">
+    <ScrollView horizontal contentContainerStyle={{ gap: 1 }}>
       {items.map((route, i) => (
         <Button
           mode={route.value === value ? "contained" : "outlined"}

@@ -10,7 +10,7 @@ export default function BetaBlitzHardestRoute() {
     [completedRoutes]
   );
   return (
-    <View className="flex-1 bg-white rounded p-4">
+    <View style={{ flex: 1, padding: 4 }}>
       <Text variant="titleSmall">Hardest Route</Text>
       <Text variant="bodyLarge">{completedRoutes.length && route}</Text>
     </View>

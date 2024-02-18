@@ -39,7 +39,7 @@ export default function BetaBlitzGoalDialog() {
       <Dialog visible={visibleGoalDialog} onDismiss={toggleGoalDialog}>
         <Dialog.Title>Update Goal</Dialog.Title>
         <Dialog.Content>
-          <Text className="mb-4">
+          <Text style={{ marginBottom: 4 }}>
             Enter the number of points you want to achieve today. By default,
             the value is 20.
           </Text>
