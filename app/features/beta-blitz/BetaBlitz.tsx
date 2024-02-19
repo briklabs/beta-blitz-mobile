@@ -1,8 +1,16 @@
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { BetaBlitzContext } from "./BetaBlitzContext";
-import { Alert } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addMilliseconds, format } from "date-fns";
+import BetaBlitzProgress from "./BetaBlitzProgress";
+import BetaBlitzBreakdown from "./BetaBlitzBreakdown";
+import BetaBlitzStopwatch from "./BetaBlitzStopwatch";
+import BetaBlitzHardestRoute from "./BetaBlitzHardestRoute";
+import BetaBlitzCompletedRoutes from "./BetaBlitzCompletedRoutes";
+import BetaBlitzRouteOptions from "./BetaBlitzRouteOptions";
+import BetaBlitzActions from "./BetaBlitzActions";
+import BetaBlitzGoalDialog from "./BetaBlitzGoalDialog";
+import { Button, Card } from "react-native-paper";
 
 interface State {
   goal: number;
@@ -36,7 +44,7 @@ class AsyncBetaBlitz {
   };
 }
 
-export default function BetaBlitz({ children }: { children: ReactNode }) {
+export default function BetaBlitz() {
   const asyncBetaBlitz = new AsyncBetaBlitz();
   const [state, setState] = useState<State>(asyncBetaBlitz.defaultState);
   const total = useMemo(
@@ -62,10 +70,13 @@ export default function BetaBlitz({ children }: { children: ReactNode }) {
   };
 
   const startSession = () => {
+    resetCalculator();
+    setAskReset(true);
     setState((s) => ({
       ...s,
       startTimestamp: Date.now(),
     }));
+    console.log("what happened?", askReset, state);
   };
 
   const removeRouteByIndex = (index: number) => {
@@ -79,7 +90,6 @@ export default function BetaBlitz({ children }: { children: ReactNode }) {
 
   const resetCalculator = () => {
     setState(() => asyncBetaBlitz.defaultState);
-    setElapsedTime(0);
     setValue(0);
   };
 
@@ -116,30 +126,10 @@ export default function BetaBlitz({ children }: { children: ReactNode }) {
     }
   }, [total, state.goal]);
 
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
-  useEffect(() => {
-    const { startTimestamp, endTimestamp } = state;
-    if (!startTimestamp) return;
-
-    if (endTimestamp) {
-      setElapsedTime(() => endTimestamp - startTimestamp);
-      return;
-    }
-
-    const intervalId = setInterval(() => {
-      const currentTime = Date.now();
-      const elapsed = currentTime - startTimestamp;
-      setElapsedTime(elapsed);
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [state.startTimestamp, state.endTimestamp]);
-
-  const stopwatch = useMemo(
-    () => format(addMilliseconds(0, elapsedTime), "mm:ss"),
-    [elapsedTime]
+  const inProgress = useMemo(
+    () => state.startTimestamp !== null && state.endTimestamp === null,
+    [state.startTimestamp, state.endTimestamp]
   );
-  const inProgress = useMemo(() => !!elapsedTime, [elapsedTime]);
 
   const [value, setValue] = useState(0);
   const items = [
@@ -156,22 +146,34 @@ export default function BetaBlitz({ children }: { children: ReactNode }) {
 
   const [askReset, setAskReset] = useState(true);
   useEffect(() => {
+    console.log(
+      "we are here",
+      askReset && goal && total >= goal,
+      askReset,
+      goal,
+      total
+    );
     if (askReset && goal && total >= goal) {
-      Alert.alert(
-        "Goal achieved!",
-        "Do you want to restart?",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-            onPress: () => setAskReset(false),
-          },
-          { text: "OK", onPress: resetCalculator },
-        ],
-        { cancelable: true }
-      );
+      if (Platform.OS === "web") {
+        const result = confirm("Do you want to restart?");
+        result ? resetCalculator() : setAskReset(false);
+      } else {
+        Alert.alert(
+          "Goal achieved!",
+          "Do you want to restart?",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => setAskReset(false),
+            },
+            { text: "OK", onPress: resetCalculator },
+          ],
+          { cancelable: true }
+        );
+      }
     }
-  }, [goal, total]);
+  }, [goal, total, askReset]);
 
   const [visibleGoalDialog, setVisibleGoalDialog] = useState(false);
   function toggleGoalDialog() {
@@ -180,13 +182,14 @@ export default function BetaBlitz({ children }: { children: ReactNode }) {
   const ctx = {
     goal,
     total,
+    startTimestamp: state.startTimestamp,
+    endTimestamp: state.endTimestamp,
     completedRoutes,
     value,
     addRoute,
     removeRouteByIndex,
     resetCalculator,
     toggleGoalDialog,
-    stopwatch,
     startSession,
     inProgress,
     visibleGoalDialog,
@@ -197,7 +200,67 @@ export default function BetaBlitz({ children }: { children: ReactNode }) {
 
   return (
     <BetaBlitzContext.Provider value={ctx}>
-      {children}
+      {state.startTimestamp ? (
+        <View style={{ flex: 1, padding: 4, gap: 4 }}>
+          <View style={{ flex: 1, gap: 4 }}>
+            <View style={{ flexDirection: "row", gap: 4, height: 160 }}>
+              <Card elevation={4} style={{ flex: 1 }}>
+                <Card.Content
+                  style={{ alignItems: "center", justifyContent: "center" }}
+                >
+                  <BetaBlitzProgress />
+                </Card.Content>
+                <Card.Actions>
+                  <BetaBlitzProgress.Action />
+                </Card.Actions>
+              </Card>
+              <Card style={{ flex: 1 }}>
+                <Card.Title title="Breakdown" />
+                <Card.Content>
+                  <BetaBlitzBreakdown />
+                </Card.Content>
+              </Card>
+            </View>
+            <View style={{ gap: 4, flexDirection: "row" }}>
+              <Card style={{ flex: 1 }}>
+                <Card.Title title="Stopwatch" />
+                <Card.Content>
+                  <BetaBlitzStopwatch />
+                </Card.Content>
+              </Card>
+              <Card style={{ flex: 1 }}>
+                <Card.Title title="Hardest Route" />
+                <Card.Content>
+                  <BetaBlitzHardestRoute />
+                </Card.Content>
+              </Card>
+            </View>
+            <Card style={{ flex: 1 }}>
+              <Card.Title title="Completed Routes" />
+              <Card.Content>
+                <BetaBlitzCompletedRoutes />
+              </Card.Content>
+            </Card>
+          </View>
+          <Card>
+            <Card.Content>
+              <BetaBlitzRouteOptions />
+            </Card.Content>
+            <Card.Actions>
+              <BetaBlitzActions />
+            </Card.Actions>
+          </Card>
+          <BetaBlitzGoalDialog />
+        </View>
+      ) : (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Button mode="contained" onPress={startSession} icon="lightning-bolt">
+            Start
+          </Button>
+        </View>
+      )}
     </BetaBlitzContext.Provider>
   );
 }

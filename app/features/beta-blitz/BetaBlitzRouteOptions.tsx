@@ -4,8 +4,7 @@ import { useBetaBlitzContext } from "./BetaBlitzContext";
 import { Button } from "react-native-paper";
 
 export default function BetaBlitzRouteOptions() {
-  const { items, setValue, value, inProgress } = useBetaBlitzContext();
-  if (!inProgress) return <></>;
+  const { items, setValue, value } = useBetaBlitzContext();
   return (
     <ScrollView horizontal contentContainerStyle={{ gap: 1 }}>
       {items.map((route, i) => (

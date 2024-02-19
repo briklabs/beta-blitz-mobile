@@ -1,20 +1,24 @@
 import React from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useBetaBlitzContext } from "./BetaBlitzContext";
-import { Button, Text } from "react-native-paper";
+import { Button, Card, Surface, Text } from "react-native-paper";
 
-export default function BetaBlitzProgress() {
-  const { total, goal, toggleGoalDialog } = useBetaBlitzContext();
+function BetaBlitzProgress() {
+  const { total, goal } = useBetaBlitzContext();
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <>
       <Text variant="displayLarge">{total}</Text>
       <Text
         variant="labelSmall"
         style={{ marginBottom: 2 }}
       >{`Total: ${total} out of ${goal}`}</Text>
-      <Button mode="outlined" onPress={toggleGoalDialog}>
-        Update Goal
-      </Button>
-    </View>
+    </>
   );
 }
+
+BetaBlitzProgress.Action = function () {
+  const { toggleGoalDialog } = useBetaBlitzContext();
+  return <Button onPress={toggleGoalDialog}>Update Goal</Button>;
+};
+
+export default BetaBlitzProgress;

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useBetaBlitzContext } from "./BetaBlitzContext";
 import { Text } from "react-native-paper";
 
@@ -17,9 +17,9 @@ export default function BetaBlitzBreakdown() {
         return result;
       }, {} as Record<string, number>);
   }, [completedRoutes]);
-  return (
-    <View style={{ flex: 1, gap: 4 }}>
-      <Text variant="titleSmall">Breakdown</Text>
+
+  if (completedRoutes.length)
+    return (
       <ScrollView contentContainerStyle={{ gap: 2 }}>
         {Object.entries(data).map(([label, value], i) => (
           <View key={i}>
@@ -30,6 +30,16 @@ export default function BetaBlitzBreakdown() {
           </View>
         ))}
       </ScrollView>
-    </View>
-  );
+    );
+
+  return <Text variant="labelSmall">N/A</Text>;
 }
+
+const styles = StyleSheet.create({
+  surface: {
+    flex: 1,
+    padding: 8,
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+  },
+});

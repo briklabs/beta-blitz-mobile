@@ -2,6 +2,8 @@ import { createContext, useContext } from "react";
 
 interface BetaBlitzCotextInterface {
   goal: number;
+  startTimestamp: number | null;
+  endTimestamp: number | null;
   total: number;
   completedRoutes: number[];
   value: number;
@@ -9,7 +11,6 @@ interface BetaBlitzCotextInterface {
   removeRouteByIndex: (i: number) => void;
   resetCalculator: () => void;
   toggleGoalDialog: () => void;
-  stopwatch: string;
   startSession: () => void;
   inProgress: boolean;
   visibleGoalDialog: boolean;
