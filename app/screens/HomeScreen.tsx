@@ -41,13 +41,7 @@ const HomeScreen = ({ navigation }: ScreenProps<"HomeScreen">) => {
   return (
     <View>
       <ScrollView>
-        <View style={{ padding: 4 }}>
-          <BetaBlitz>
-            <Pressable onPress={() => navigation.navigate("BetaBlitzScreen")}>
-              <WorkoutProgress />
-            </Pressable>
-          </BetaBlitz>
-        </View>
+        <View style={{ padding: 4 }}></View>
       </ScrollView>
     </View>
   );

@@ -25,7 +25,7 @@ export default function BetaBlitzStopwatch() {
   }, [startTimestamp, endTimestamp]);
 
   const stopwatch = useMemo(
-    () => format(addMilliseconds(0, elapsedTime), "hh:mm:ss"),
+    () => format(addMilliseconds(0, elapsedTime), "mm:ss"),
     [elapsedTime]
   );
   return <Text variant="displaySmall">{stopwatch}</Text>;

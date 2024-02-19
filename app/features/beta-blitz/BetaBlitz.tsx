@@ -70,13 +70,11 @@ export default function BetaBlitz() {
   };
 
   const startSession = () => {
-    resetCalculator();
     setAskReset(true);
-    setState((s) => ({
-      ...s,
+    setState(() => ({
+      ...asyncBetaBlitz.defaultState,
       startTimestamp: Date.now(),
     }));
-    console.log("what happened?", askReset, state);
   };
 
   const removeRouteByIndex = (index: number) => {
@@ -146,32 +144,26 @@ export default function BetaBlitz() {
 
   const [askReset, setAskReset] = useState(true);
   useEffect(() => {
-    console.log(
-      "we are here",
-      askReset && goal && total >= goal,
-      askReset,
-      goal,
-      total
-    );
-    if (askReset && goal && total >= goal) {
-      if (Platform.OS === "web") {
-        const result = confirm("Do you want to restart?");
-        result ? resetCalculator() : setAskReset(false);
-      } else {
-        Alert.alert(
-          "Goal achieved!",
-          "Do you want to restart?",
-          [
-            {
-              text: "Cancel",
-              style: "cancel",
-              onPress: () => setAskReset(false),
-            },
-            { text: "OK", onPress: resetCalculator },
-          ],
-          { cancelable: true }
-        );
-      }
+    if (!askReset) return;
+    if (goal > total) return;
+
+    if (Platform.OS === "web") {
+      const result = confirm("Do you want to restart?");
+      result ? startSession() : setAskReset(false);
+    } else {
+      Alert.alert(
+        "Goal achieved!",
+        "Do you want to restart?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+            onPress: () => setAskReset(false),
+          },
+          { text: "OK", onPress: startSession },
+        ],
+        { cancelable: true }
+      );
     }
   }, [goal, total, askReset]);
 
@@ -203,18 +195,29 @@ export default function BetaBlitz() {
       {state.startTimestamp ? (
         <View style={{ flex: 1, padding: 4, gap: 4 }}>
           <View style={{ flex: 1, gap: 4 }}>
-            <View style={{ flexDirection: "row", gap: 4, height: 160 }}>
-              <Card elevation={4} style={{ flex: 1 }}>
-                <Card.Content
-                  style={{ alignItems: "center", justifyContent: "center" }}
-                >
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 4,
+                height: 160,
+              }}
+            >
+              <Card
+                elevation={4}
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Card.Content>
                   <BetaBlitzProgress />
                 </Card.Content>
                 <Card.Actions>
                   <BetaBlitzProgress.Action />
                 </Card.Actions>
               </Card>
-              <Card style={{ flex: 1 }}>
+              <Card style={{ flex: 1, overflow: "scroll" }}>
                 <Card.Title title="Breakdown" />
                 <Card.Content>
                   <BetaBlitzBreakdown />
@@ -246,7 +249,7 @@ export default function BetaBlitz() {
             <Card.Content>
               <BetaBlitzRouteOptions />
             </Card.Content>
-            <Card.Actions>
+            <Card.Actions style={{ gap: 4 }}>
               <BetaBlitzActions />
             </Card.Actions>
           </Card>

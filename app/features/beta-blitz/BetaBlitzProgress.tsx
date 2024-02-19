@@ -7,7 +7,9 @@ function BetaBlitzProgress() {
   const { total, goal } = useBetaBlitzContext();
   return (
     <>
-      <Text variant="displayLarge">{total}</Text>
+      <Text variant="displayLarge" style={{ textAlign: "center" }}>
+        {total}
+      </Text>
       <Text
         variant="labelSmall"
         style={{ marginBottom: 2 }}

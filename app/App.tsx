@@ -9,6 +9,7 @@ import {
   MD3DarkTheme,
   adaptNavigationTheme,
 } from "react-native-paper";
+import { StatusBar } from "expo-status-bar";
 
 const Stack = createStackNavigator<RootStackParamList>();
 const { DarkTheme } = adaptNavigationTheme({
@@ -18,12 +19,13 @@ const { DarkTheme } = adaptNavigationTheme({
 function App() {
   return (
     <PaperProvider theme={MD3DarkTheme}>
+      <StatusBar animated backgroundColor="#61dafb" />
       <NavigationContainer theme={DarkTheme}>
         <Stack.Navigator initialRouteName="BetaBlitzScreen">
           <Stack.Screen
             name="BetaBlitzScreen"
             component={BetaBlitzScreen}
-            options={{ title: "Beta Blitz" }}
+            options={{ title: "Beta Blitz v1.0" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

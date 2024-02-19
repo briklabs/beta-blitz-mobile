@@ -20,16 +20,27 @@ export default function BetaBlitzBreakdown() {
 
   if (completedRoutes.length)
     return (
-      <ScrollView contentContainerStyle={{ gap: 2 }}>
-        {Object.entries(data).map(([label, value], i) => (
-          <View key={i}>
-            <Text variant="labelSmall">{label} routes</Text>
-            <Text variant="headlineSmall">
-              {Math.ceil((value / completedRoutes.length) * 100)}%
-            </Text>
-          </View>
-        ))}
-      </ScrollView>
+      <View
+        style={{
+          rowGap: 8,
+          columnGap: 24,
+          flexWrap: "wrap",
+          flexDirection: "row",
+        }}
+      >
+        {Object.entries(data)
+          .slice(0, 4)
+          .map(([label, value], i) => (
+            <View key={i} style={{ width: 60 }}>
+              <Text variant="labelSmall" numberOfLines={1}>
+                {label}
+              </Text>
+              <Text variant="bodyLarge">
+                {Math.ceil((value / completedRoutes.length) * 100)}%
+              </Text>
+            </View>
+          ))}
+      </View>
     );
 
   return <Text variant="labelSmall">N/A</Text>;

@@ -12,21 +12,26 @@ export default function BetaBlitzActions() {
     value,
     addRoute,
   } = useBetaBlitzContext();
-  if (goal && total === 0 && !inProgress)
-    return (
-      <Button mode="contained" onPress={() => startSession()}>
-        Start
+  return (
+    <>
+      <Button
+        mode="outlined"
+        onPress={resetCalculator}
+        style={{ marginRight: "auto" }}
+      >
+        Close
       </Button>
-    );
-  if (goal && total >= goal)
-    return (
-      <Button mode="contained" onPress={() => resetCalculator()}>
+      <Button
+        mode={inProgress ? "outlined" : "contained"}
+        onPress={startSession}
+      >
         Restart
       </Button>
-    );
-  return (
-    <Button disabled={!value} mode="contained" onPress={addRoute}>
-      Add
-    </Button>
+      {inProgress && (
+        <Button disabled={!value} mode="contained" onPress={addRoute}>
+          Add
+        </Button>
+      )}
+    </>
   );
 }
