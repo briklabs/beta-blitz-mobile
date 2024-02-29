@@ -10,6 +10,8 @@ import {
   adaptNavigationTheme,
 } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
+import HomeScreen from "./screens/HomeScreen";
+import GettingStartedScreen from "./screens/GettingStartedScreen";
 
 const Stack = createStackNavigator<RootStackParamList>();
 const { DarkTheme } = adaptNavigationTheme({
@@ -21,11 +23,21 @@ function App() {
     <PaperProvider theme={MD3DarkTheme}>
       <StatusBar animated backgroundColor="#61dafb" />
       <NavigationContainer theme={DarkTheme}>
-        <Stack.Navigator initialRouteName="BetaBlitzScreen">
+        <Stack.Navigator initialRouteName="HomeScreen">
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{ title: "Home" }}
+          />
+          <Stack.Screen
+            name="GettingStartedScreen"
+            component={GettingStartedScreen}
+            options={{ title: "Getting Started" }}
+          />
           <Stack.Screen
             name="BetaBlitzScreen"
             component={BetaBlitzScreen}
-            options={{ title: "Beta Blitz v1.0" }}
+            options={{ title: "Beta Blitz" }}
           />
         </Stack.Navigator>
       </NavigationContainer>
