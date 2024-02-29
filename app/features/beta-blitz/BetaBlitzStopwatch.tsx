@@ -31,5 +31,5 @@ export default function BetaBlitzStopwatch() {
 
     return format(new Date(0, 0, 0, hours, minutes, seconds), "HH:mm:ss");
   }, [elapsedTime]);
-  return <Text variant="displaySmall">{stopwatch}</Text>;
+  return <Text variant="titleLarge">{stopwatch}</Text>;
 }

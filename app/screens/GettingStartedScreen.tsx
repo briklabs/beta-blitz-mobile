@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { View } from "react-native";
 import { ScreenProps } from "../utils/types";
 import { Button, Text } from "react-native-paper";
+import { ScrollView } from "react-native-gesture-handler";
 
 const GettingStartedScreen = ({
   navigation,
 }: ScreenProps<"GettingStartedScreen">) => {
   return (
-    <View style={{ padding: 24, gap: 24 }}>
+    <ScrollView contentContainerStyle={{ gap: 24, padding: 24 }}>
       <Text variant="headlineLarge">🏁 Getting Started</Text>
       <Text variant="titleLarge">1. 🕒 Tap "Start"</Text>
       <View style={{ gap: 8, paddingLeft: 8 }}>
@@ -33,9 +34,9 @@ const GettingStartedScreen = ({
       </View>
       <Text variant="bodyLarge">
         That's it! Start climbing, add routes, and conquer your climbing goals
-        with Beta Blitz 🚀🚀🚀!
+        with Beta Blitz! 🚀🚀🚀
       </Text>
-    </View>
+    </ScrollView>
   );
 };
 

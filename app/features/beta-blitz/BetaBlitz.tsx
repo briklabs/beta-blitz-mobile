@@ -241,7 +241,6 @@ export default function BetaBlitz() {
               </Card>
             </View>
             <Card style={{ flex: 1 }}>
-              <Card.Title title="Completed Routes" />
               <View style={{ maxHeight: "45vh" as DimensionValue }}>
                 <ScrollView>
                   <BetaBlitzCompletedRoutes />

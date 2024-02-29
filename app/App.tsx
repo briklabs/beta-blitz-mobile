@@ -9,7 +9,6 @@ import {
   MD3DarkTheme,
   adaptNavigationTheme,
 } from "react-native-paper";
-import { StatusBar } from "expo-status-bar";
 import HomeScreen from "./screens/HomeScreen";
 import GettingStartedScreen from "./screens/GettingStartedScreen";
 
@@ -21,7 +20,6 @@ const { DarkTheme } = adaptNavigationTheme({
 function App() {
   return (
     <PaperProvider theme={MD3DarkTheme}>
-      <StatusBar animated backgroundColor="#61dafb" />
       <NavigationContainer theme={DarkTheme}>
         <Stack.Navigator initialRouteName="HomeScreen">
           <Stack.Screen
