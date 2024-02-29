@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { BetaBlitzContext } from "./BetaBlitzContext";
-import { Alert, Platform, View } from "react-native";
+import { Alert, DimensionValue, Platform, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BetaBlitzProgress from "./BetaBlitzProgress";
 import BetaBlitzBreakdown from "./BetaBlitzBreakdown";
@@ -11,6 +11,7 @@ import BetaBlitzRouteOptions from "./BetaBlitzRouteOptions";
 import BetaBlitzActions from "./BetaBlitzActions";
 import BetaBlitzGoalDialog from "./BetaBlitzGoalDialog";
 import { Button, Card } from "react-native-paper";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface State {
   goal: number;
@@ -56,6 +57,7 @@ export default function BetaBlitz() {
     const init = async () => {
       const asyncState = await asyncBetaBlitz.getState();
       setState(() => asyncState);
+      startSession();
     };
     init();
   }, []);
@@ -240,9 +242,11 @@ export default function BetaBlitz() {
             </View>
             <Card style={{ flex: 1 }}>
               <Card.Title title="Completed Routes" />
-              <Card.Content>
-                <BetaBlitzCompletedRoutes />
-              </Card.Content>
+              <View style={{ maxHeight: "45vh" as DimensionValue }}>
+                <ScrollView>
+                  <BetaBlitzCompletedRoutes />
+                </ScrollView>
+              </View>
             </Card>
           </View>
           <Card>

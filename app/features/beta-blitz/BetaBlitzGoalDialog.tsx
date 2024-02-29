@@ -10,12 +10,6 @@ export default function BetaBlitzGoalDialog() {
     setValue(String(goal));
   }, [goal]);
 
-  const errorMessage = useMemo(() => {
-    if (!value) return "Goal must be more than 0";
-    if (isNaN(Number(value))) return "Goal must be an integer";
-    return "";
-  }, [value]);
-
   function handleChangeText(str: string) {
     if (!str || isNaN(parseInt(str, 0))) {
       setValue("");
