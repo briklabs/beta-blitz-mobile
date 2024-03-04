@@ -12,6 +12,7 @@ import BetaBlitzActions from "./BetaBlitzActions";
 import BetaBlitzGoalDialog from "./BetaBlitzGoalDialog";
 import { Button, Card } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
+import { createWorkout, getWorkoutById } from "../../db/beta-blitz.service";
 
 interface State {
   goal: number;
@@ -53,14 +54,15 @@ export default function BetaBlitz() {
     [state?.completedRoutes]
   );
 
-  useEffect(() => {
-    const init = async () => {
-      const asyncState = await asyncBetaBlitz.getState();
-      setState(() => asyncState);
-      startSession();
-    };
-    init();
-  }, []);
+  // useEffect(() => {
+  //   const init = async () => {
+  //     const asyncState = await asyncBetaBlitz.getState();
+  //     setState(() => asyncState);
+  //     startSession();
+  //   };
+  //   init();
+  // }, []);
+  getWorkoutById(1, (id: number) => console.log("ocooool,", id));
 
   const addRoute = () => {
     if (!value || isNaN(value)) return;
@@ -73,10 +75,11 @@ export default function BetaBlitz() {
 
   const startSession = () => {
     setAskReset(true);
-    setState(() => ({
-      ...asyncBetaBlitz.defaultState,
-      startTimestamp: Date.now(),
-    }));
+    createWorkout(20, console.log);
+    // setState(() => ({
+    //   ...asyncBetaBlitz.defaultState,
+    //   startTimestamp: Date.now(),
+    // }));
   };
 
   const removeRouteByIndex = (index: number) => {

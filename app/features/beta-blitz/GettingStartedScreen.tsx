@@ -1,12 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { View } from "react-native";
-import { ScreenProps } from "../utils/types";
-import { Button, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
 
-const GettingStartedScreen = ({
-  navigation,
-}: ScreenProps<"GettingStartedScreen">) => {
+const GettingStartedScreen = () => {
   return (
     <ScrollView contentContainerStyle={{ gap: 24, padding: 24 }}>
       <Text variant="headlineLarge">🏁 Getting Started</Text>
