@@ -1,25 +1,56 @@
 import z from "zod";
 
-export const betaBlitzSchema = z.object({
+// Define the Zod schema for a single CompletedRoute
+const completedRouteSchema = z.object({
+  value: z.number(),
+  completedTimestamp: z.coerce.date(),
+});
+
+const completedRoutesSchema = z.array(completedRouteSchema);
+
+const betaBlitzSchema = z.object({
   id: z.number().int(),
   goal: z.number().min(0).int(),
   completedRoutes: z
-    .array(z.object({ value: z.number(), completedTimestamp: z.coerce.date() }))
-    .nullable(),
+    .string()
+    .nullable()
+    .transform((str) => {
+      const arr = str ? JSON.parse(str) : [];
+      return completedRoutesSchema.parse(arr);
+    }),
   startTimestamp: z.coerce.date(),
   endTimestamp: z.coerce.date().nullable(),
 });
 
-export const createBetaBlitzValidationSchema = betaBlitzSchema.omit({
-  id: true,
-  completedRoutes: true,
-  endTimestamp: true,
-});
+type BetaBlitzType = z.infer<typeof betaBlitzSchema>;
 
-export const updateBetaBlitzValidationSchema = betaBlitzSchema
+const createBetaBlitzValidationSchema = betaBlitzSchema
   .omit({
     id: true,
+    completedRoutes: true,
+    endTimestamp: true,
   })
-  .partial();
+  .transform((obj) => ({
+    ...obj,
+    startTimestamp: obj.startTimestamp.toISOString(),
+  }));
 
-export type BetaBlitzType = z.infer<typeof betaBlitzSchema>;
+const updateBetaBlitzValidationSchema = betaBlitzSchema
+  .omit({
+    id: true,
+    startTimestamp: true,
+    completedRoutes: true,
+  })
+  .merge(z.object({ completedRoutes: completedRoutesSchema }))
+  .transform((obj) => ({
+    ...obj,
+    completedRoutes: JSON.stringify(obj.completedRoutes ?? null),
+    endTimestamp: obj.endTimestamp?.toISOString() ?? null,
+  }));
+
+export {
+  betaBlitzSchema,
+  BetaBlitzType,
+  createBetaBlitzValidationSchema,
+  updateBetaBlitzValidationSchema,
+};

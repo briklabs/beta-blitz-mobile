@@ -8,17 +8,17 @@ export default function BetaBlitzBreakdown() {
 
   const data = useMemo(() => {
     return completedRoutes
-      .sort()
+      ?.sort()
       .reverse()
-      .reduce((result, curr) => {
-        const item = items.find((i) => i.value === curr);
-        const key = item?.label ?? curr;
+      .reduce((result, curr, index) => {
+        const item = items.find((i) => i.value === curr.value);
+        const key = item?.label ?? `${index}. ${curr.value}`;
         result[key] = result[key] ? result[key] + 1 : 1;
         return result;
       }, {} as Record<string, number>);
   }, [completedRoutes]);
 
-  if (completedRoutes.length)
+  if (completedRoutes?.length && data)
     return (
       <View
         style={{

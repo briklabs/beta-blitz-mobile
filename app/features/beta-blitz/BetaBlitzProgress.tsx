@@ -1,7 +1,6 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
 import { useBetaBlitzContext } from "./BetaBlitzContext";
-import { Button, Card, Surface, Text } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 
 function BetaBlitzProgress() {
   const { total, goal } = useBetaBlitzContext();

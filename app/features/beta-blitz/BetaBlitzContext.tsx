@@ -1,22 +1,23 @@
 import { createContext, useContext } from "react";
+import { BetaBlitzType } from "../../db/beta-blitz-validation";
 
 interface BetaBlitzCotextInterface {
-  goal: number;
-  startTimestamp: number | null;
-  endTimestamp: number | null;
+  goal: BetaBlitzType["goal"];
+  startTimestamp: BetaBlitzType["startTimestamp"];
+  endTimestamp: BetaBlitzType["endTimestamp"];
   total: number;
-  completedRoutes: number[];
-  value: number;
+  completedRoutes: BetaBlitzType["completedRoutes"];
+  selectedRoute: number;
   addRoute: () => void;
   removeRouteByIndex: (i: number) => void;
   resetCalculator: () => void;
-  toggleGoalDialog: () => void;
-  startSession: () => void;
+  endSession: () => void;
   inProgress: boolean;
-  visibleGoalDialog: boolean;
   setGoal: (num: number) => void;
-  setValue: (num: number) => void;
+  setSelectedRoute: (num: number) => void;
   items: { label: string; value: number }[];
+  toggleGoalDialog: () => void;
+  visibleGoalDialog: boolean;
 }
 
 export const BetaBlitzContext = createContext<BetaBlitzCotextInterface>(

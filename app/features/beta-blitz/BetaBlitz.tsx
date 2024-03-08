@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { BetaBlitzContext } from "./BetaBlitzContext";
-import { Alert, DimensionValue, Platform, View } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DimensionValue, View, ScrollView } from "react-native";
 import BetaBlitzProgress from "./BetaBlitzProgress";
 import BetaBlitzBreakdown from "./BetaBlitzBreakdown";
 import BetaBlitzStopwatch from "./BetaBlitzStopwatch";
@@ -9,132 +8,30 @@ import BetaBlitzHardestRoute from "./BetaBlitzHardestRoute";
 import BetaBlitzCompletedRoutes from "./BetaBlitzCompletedRoutes";
 import BetaBlitzRouteOptions from "./BetaBlitzRouteOptions";
 import BetaBlitzActions from "./BetaBlitzActions";
+import { Card } from "react-native-paper";
+import { BetaBlitzType } from "../../db/beta-blitz-validation";
 import BetaBlitzGoalDialog from "./BetaBlitzGoalDialog";
-import { Button, Card } from "react-native-paper";
-import { ScrollView } from "react-native-gesture-handler";
-import { createWorkout, getWorkoutById } from "../../db/beta-blitz.service";
 
-interface State {
-  goal: number;
-  completedRoutes: number[];
-  startTimestamp: number | null;
-  endTimestamp: number | null;
+interface BetaBlitzProps {
+  workout: BetaBlitzType;
+  onReset: () => void;
+  onClose: () => void;
+  onUpdateWorkout: (w: BetaBlitzType) => void;
 }
-
-class AsyncBetaBlitz {
-  private readonly STORAGE_KEY = "beat-blitz";
-  private readonly DEFAULT_GOAL = 20;
-
-  async getState(): Promise<State> {
-    const value = await AsyncStorage.getItem(this.STORAGE_KEY);
-    return value ? JSON.parse(value) : this.defaultState;
-  }
-
-  async setState(state: State) {
-    try {
-      await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      console.error("Error saving state:", error);
-    }
-  }
-
-  defaultState = {
-    goal: this.DEFAULT_GOAL,
-    completedRoutes: [],
-    startTimestamp: null,
-    endTimestamp: null,
-  };
-}
-
-export default function BetaBlitz() {
-  const asyncBetaBlitz = new AsyncBetaBlitz();
-  const [state, setState] = useState<State>(asyncBetaBlitz.defaultState);
+export default function BetaBlitz({
+  workout,
+  onUpdateWorkout,
+  onReset,
+  onClose,
+}: BetaBlitzProps) {
   const total = useMemo(
-    () => state?.completedRoutes.reduce((prev, curr) => curr + prev, 0),
-    [state?.completedRoutes]
+    () =>
+      workout?.completedRoutes?.reduce((prev, curr) => curr.value + prev, 0) ??
+      0,
+    [workout?.completedRoutes]
   );
 
-  // useEffect(() => {
-  //   const init = async () => {
-  //     const asyncState = await asyncBetaBlitz.getState();
-  //     setState(() => asyncState);
-  //     startSession();
-  //   };
-  //   init();
-  // }, []);
-  getWorkoutById(1, (id: number) => console.log("ocooool,", id));
-
-  const addRoute = () => {
-    if (!value || isNaN(value)) return;
-    const completedRoutes = [...state.completedRoutes, value];
-    setState((s) => ({
-      ...s,
-      completedRoutes,
-    }));
-  };
-
-  const startSession = () => {
-    setAskReset(true);
-    createWorkout(20, console.log);
-    // setState(() => ({
-    //   ...asyncBetaBlitz.defaultState,
-    //   startTimestamp: Date.now(),
-    // }));
-  };
-
-  const removeRouteByIndex = (index: number) => {
-    const completedRoutes = [...state.completedRoutes];
-    completedRoutes.splice(index, 1);
-    setState((s) => ({
-      ...s,
-      completedRoutes,
-    }));
-  };
-
-  const resetCalculator = () => {
-    setState(() => asyncBetaBlitz.defaultState);
-    setValue(0);
-  };
-
-  const goal = useMemo(() => state.goal, [state.goal]);
-  async function setGoal(goal: number) {
-    setState((s) => ({
-      ...s,
-      goal,
-    }));
-  }
-
-  const completedRoutes = useMemo(
-    () => state.completedRoutes,
-    [state.completedRoutes]
-  );
-
-  useEffect(() => {
-    const update = async () => await asyncBetaBlitz.setState(state);
-    update();
-  }, [state.goal, state.startTimestamp, state.endTimestamp, total]);
-
-  /**
-   * set end timestamp if it doesn't exist
-   * and if total reached or surpassed goal
-   */
-  useEffect(() => {
-    if (state.endTimestamp) return;
-    if (total >= state.goal) {
-      const endTimestamp = Date.now();
-      setState((s) => ({
-        ...s,
-        endTimestamp,
-      }));
-    }
-  }, [total, state.goal]);
-
-  const inProgress = useMemo(
-    () => state.startTimestamp !== null && state.endTimestamp === null,
-    [state.startTimestamp, state.endTimestamp]
-  );
-
-  const [value, setValue] = useState(0);
+  const [selectedRoute, setSelectedRoute] = useState(0);
   const items = [
     { label: "V0/V1", value: 1 },
     { label: "V2", value: 2 },
@@ -146,130 +43,154 @@ export default function BetaBlitz() {
     { label: "V8", value: 8 },
     { label: "V9", value: 9 },
   ];
+  const addRoute = () => {
+    if (!selectedRoute || isNaN(selectedRoute) || !workout) return;
+    const completedRoutes: BetaBlitzType["completedRoutes"] = [
+      ...(workout.completedRoutes ?? []),
+      {
+        completedTimestamp: new Date(),
+        value: selectedRoute,
+      },
+    ];
+    onUpdateWorkout({
+      ...workout,
+      completedRoutes,
+    });
+  };
 
-  const [askReset, setAskReset] = useState(true);
+  const removeRouteByIndex = (index: number) => {
+    const completedRoutes = [...(workout.completedRoutes ?? [])];
+    completedRoutes.splice(index, 1);
+    onUpdateWorkout({
+      ...workout,
+      completedRoutes,
+    });
+  };
+
+  const goal = useMemo(() => workout.goal, [workout.goal]);
+  async function setGoal(goal: number) {
+    onUpdateWorkout({
+      ...workout,
+      goal,
+    });
+  }
+
+  const completedRoutes = useMemo(
+    () => workout.completedRoutes ?? [],
+    [workout.completedRoutes]
+  );
+
+  /**
+   * set end timestamp if it doesn't exist
+   * and if total reached or surpassed goal
+   */
   useEffect(() => {
-    if (!askReset) return;
-    if (goal > total) return;
-
-    if (Platform.OS === "web") {
-      const result = confirm("Do you want to restart?");
-      result ? startSession() : setAskReset(false);
-    } else {
-      Alert.alert(
-        "Goal achieved!",
-        "Do you want to restart?",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-            onPress: () => setAskReset(false),
-          },
-          { text: "OK", onPress: startSession },
-        ],
-        { cancelable: true }
-      );
+    if (workout.endTimestamp) return;
+    if (total >= workout.goal) {
+      onUpdateWorkout({
+        ...workout,
+        endTimestamp: new Date(),
+      });
     }
-  }, [goal, total, askReset]);
+  }, [total, goal]);
+
+  const inProgress = useMemo(
+    () => workout.startTimestamp !== null && workout.endTimestamp === null,
+    [workout.startTimestamp, workout.endTimestamp]
+  );
 
   const [visibleGoalDialog, setVisibleGoalDialog] = useState(false);
   function toggleGoalDialog() {
     setVisibleGoalDialog((bool) => !bool);
   }
+
   const ctx = {
     goal,
     total,
-    startTimestamp: state.startTimestamp,
-    endTimestamp: state.endTimestamp,
+    startTimestamp: workout.startTimestamp,
+    endTimestamp: workout.endTimestamp,
     completedRoutes,
-    value,
+    selectedRoute,
     addRoute,
     removeRouteByIndex,
-    resetCalculator,
-    toggleGoalDialog,
-    startSession,
+    endSession: () => {
+      console.log("ok?");
+      onClose();
+    },
+    resetCalculator: onReset,
     inProgress,
-    visibleGoalDialog,
     setGoal,
-    setValue,
+    setSelectedRoute,
     items,
+    visibleGoalDialog,
+    toggleGoalDialog,
   };
 
   return (
     <BetaBlitzContext.Provider value={ctx}>
-      {state.startTimestamp ? (
-        <View style={{ flex: 1, padding: 4, gap: 4 }}>
-          <View style={{ flex: 1, gap: 4 }}>
-            <View
+      <BetaBlitzGoalDialog />
+      <View style={{ height: "100%", padding: 4, gap: 4 }}>
+        <View style={{ flex: 1, gap: 4 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 4,
+              height: 160,
+            }}
+          >
+            <Card
+              elevation={4}
               style={{
-                flexDirection: "row",
-                gap: 4,
-                height: 160,
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Card
-                elevation={4}
-                style={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Card.Content>
-                  <BetaBlitzProgress />
-                </Card.Content>
-                <Card.Actions>
-                  <BetaBlitzProgress.Action />
-                </Card.Actions>
-              </Card>
-              <Card style={{ flex: 1, overflow: "scroll" }}>
-                <Card.Title title="Breakdown" />
-                <Card.Content>
-                  <BetaBlitzBreakdown />
-                </Card.Content>
-              </Card>
-            </View>
-            <View style={{ gap: 4, flexDirection: "row" }}>
-              <Card style={{ flex: 1 }}>
-                <Card.Title title="Stopwatch" />
-                <Card.Content>
-                  <BetaBlitzStopwatch />
-                </Card.Content>
-              </Card>
-              <Card style={{ flex: 1 }}>
-                <Card.Title title="Hardest Route" />
-                <Card.Content>
-                  <BetaBlitzHardestRoute />
-                </Card.Content>
-              </Card>
-            </View>
-            <Card style={{ flex: 1 }}>
-              <View style={{ maxHeight: "45vh" as DimensionValue }}>
-                <ScrollView>
-                  <BetaBlitzCompletedRoutes />
-                </ScrollView>
-              </View>
+              <Card.Content>
+                <BetaBlitzProgress />
+              </Card.Content>
+              <Card.Actions>
+                <BetaBlitzProgress.Action />
+              </Card.Actions>
+            </Card>
+            <Card style={{ flex: 1, overflow: "scroll" }}>
+              <Card.Title title="Breakdown" />
+              <Card.Content>
+                <BetaBlitzBreakdown />
+              </Card.Content>
             </Card>
           </View>
-          <Card>
-            <Card.Content>
-              <BetaBlitzRouteOptions />
-            </Card.Content>
-            <Card.Actions style={{ gap: 4 }}>
-              <BetaBlitzActions />
-            </Card.Actions>
+          <View style={{ gap: 4, flexDirection: "row" }}>
+            <Card style={{ flex: 1 }}>
+              <Card.Title title="Stopwatch" />
+              <Card.Content>
+                <BetaBlitzStopwatch />
+              </Card.Content>
+            </Card>
+            <Card style={{ flex: 1 }}>
+              <Card.Title title="Hardest Route" />
+              <Card.Content>
+                <BetaBlitzHardestRoute />
+              </Card.Content>
+            </Card>
+          </View>
+          <Card style={{ flex: 1 }}>
+            <View style={{ maxHeight: "45vh" as DimensionValue }}>
+              <ScrollView>
+                <BetaBlitzCompletedRoutes />
+              </ScrollView>
+            </View>
           </Card>
-          <BetaBlitzGoalDialog />
         </View>
-      ) : (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Button mode="contained" onPress={startSession} icon="lightning-bolt">
-            Start
-          </Button>
-        </View>
-      )}
+        <Card>
+          <Card.Content>
+            <BetaBlitzRouteOptions />
+          </Card.Content>
+          <Card.Actions style={{ gap: 4 }}>
+            <BetaBlitzActions />
+          </Card.Actions>
+        </Card>
+      </View>
     </BetaBlitzContext.Provider>
   );
 }

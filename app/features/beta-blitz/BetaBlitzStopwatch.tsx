@@ -11,13 +11,13 @@ export default function BetaBlitzStopwatch() {
     if (!startTimestamp) return;
 
     if (endTimestamp) {
-      setElapsedTime(() => endTimestamp - startTimestamp);
+      setElapsedTime(() => endTimestamp.getTime() - startTimestamp.getTime());
       return;
     }
 
     const intervalId = setInterval(() => {
       const currentTime = Date.now();
-      const elapsed = currentTime - startTimestamp;
+      const elapsed = currentTime - startTimestamp.getTime();
       setElapsedTime(elapsed);
     }, 1000);
 

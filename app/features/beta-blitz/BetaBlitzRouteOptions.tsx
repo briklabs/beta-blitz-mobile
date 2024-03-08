@@ -4,14 +4,14 @@ import { useBetaBlitzContext } from "./BetaBlitzContext";
 import { Button } from "react-native-paper";
 
 export default function BetaBlitzRouteOptions() {
-  const { items, setValue, value } = useBetaBlitzContext();
+  const { items, setSelectedRoute, selectedRoute } = useBetaBlitzContext();
   return (
     <ScrollView horizontal contentContainerStyle={{ gap: 4 }}>
       {items.map((route, i) => (
         <Button
-          mode={route.value === value ? "contained" : "contained-tonal"}
+          mode={route.value === selectedRoute ? "contained" : "contained-tonal"}
           key={i}
-          onPress={() => setValue(route.value)}
+          onPress={() => setSelectedRoute(route.value)}
         >
           {route.label}
         </Button>

@@ -1,44 +1,86 @@
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { Button, Card, Chip, Text } from "react-native-paper";
-import { NavProps } from "./types";
+import React, { useMemo, useState } from "react";
+import { ScrollView, DimensionValue, View } from "react-native";
+import {
+  Avatar,
+  Button,
+  Card,
+  Chip,
+  IconButton,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import { getAllWorkouts } from "../db/beta-blitz.service";
 import { BetaBlitzType } from "../db/beta-blitz-validation";
 import { format } from "date-fns";
+import { HomeScreenProps } from "./types";
+import { useFocusEffect } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const HomeRoute = ({ jumpTo }: NavProps) => {
+const HomeRoute = ({ navigation }: HomeScreenProps) => {
   const [workouts, setWorkouts] = useState<BetaBlitzType[]>([]);
 
-  useEffect(() => {
-    const fetchWorkouts = () => {
-      getAllWorkouts((allWorkouts) => {
-        setWorkouts([...allWorkouts]);
-      });
-    };
+  useFocusEffect(() => {
+    getAllWorkouts(setWorkouts);
+  });
 
-    fetchWorkouts();
-  }, []);
+  const [showAll, setShowAll] = useState(false);
+  const items = useMemo(
+    () => (showAll ? workouts : workouts.slice(0, 3)),
+    [showAll, workouts]
+  );
+
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View>
+    <View style={{ paddingTop: insets.top }}>
       <Card>
-        <Card.Title title="Past Sessions" />
+        <Card.Title title="Latest Sessions" />
         <Card.Content>
-          {workouts.map((w, i) => (
+          {items.map((w, i) => (
             <Button
               key={i}
-              mode="contained-tonal"
+              mode="outlined"
               style={{
-                marginBottom: 2,
+                marginBottom: i === items.length - 1 ? 0 : 4,
+                justifyContent: "center",
               }}
+              contentStyle={{
+                height: 56,
+                alignItems: "stretch",
+                justifyContent: "space-between",
+              }}
+              onPress={() =>
+                navigation.navigate("Sessions", { workoutId: w.id })
+              }
             >
-              <Text>Beta Blitz — </Text>
-              <Text variant="labelSmall">{format(w.startTimestamp, "P")}</Text>
+              <View>
+                <Avatar.Icon
+                  size={36}
+                  icon="lightning-bolt"
+                  color={theme.colors.elevation.level5}
+                />
+              </View>
+              <View style={{ paddingHorizontal: 12 }}>
+                <Chip compact>Goal: {w.goal}</Chip>
+              </View>
+              <View>
+                <Text variant="labelSmall">
+                  {format(w.startTimestamp, "E P")}
+                </Text>
+                <Text>{format(w.startTimestamp, "p")}</Text>
+              </View>
             </Button>
           ))}
         </Card.Content>
         <Card.Actions>
-          <Button onPress={() => jumpTo("beta-blitz")}>
+          {!showAll && workouts.length > 4 && (
+            <Button onPress={() => setShowAll(true)}>Show all</Button>
+          )}
+          <Button
+            mode="contained-tonal"
+            onPress={() => navigation.jumpTo("Sessions")}
+          >
             Start new session
           </Button>
         </Card.Actions>

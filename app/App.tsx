@@ -1,53 +1,44 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { registerRootComponent } from "expo";
-import { PaperProvider, MD3DarkTheme } from "react-native-paper";
-import { BottomNavigation } from "react-native-paper";
 import SettingsRoute from "./routes/SettingsRoute";
 import BetaBlitzRoute from "./routes/BetaBlitzRoute";
 import HomeRoute from "./routes/HomeRoute";
-import { createTables } from "./db/beta-blitz.repo";
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { PaperProvider, MD3DarkTheme, Icon } from "react-native-paper";
+import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
+import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar } from "react-native";
+
+const Tab = createMaterialBottomTabNavigator();
 
 function App() {
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    {
-      key: "home",
-      title: "Home",
-      focusedIcon: "home",
-      unfocusedIcon: "home-outline",
-    },
-    {
-      key: "beta-blitz",
-      title: "Session",
-      focusedIcon: "lightning-bolt",
-    },
-    {
-      key: "settings",
-      title: "Settings",
-      focusedIcon: "cog",
-      unfocusedIcon: "cog-outline",
-    },
-  ]);
-
-  const renderScene = BottomNavigation.SceneMap({
-    home: HomeRoute,
-    "beta-blitz": BetaBlitzRoute,
-    settings: SettingsRoute,
-  });
-
-  // Initialize tables when the app starts
-  useEffect(() => createTables(), []);
-
   return (
     <PaperProvider theme={MD3DarkTheme}>
-      <BottomNavigation
-        navigationState={{ index, routes }}
-        onIndexChange={setIndex}
-        renderScene={renderScene}
-      />
-      <StatusBar style="light" />
+      <StatusBar barStyle="light-content" />
+      <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen
+            name="Home"
+            component={HomeRoute as any}
+            options={{
+              tabBarIcon: () => <Icon source="home-outline" size={24} />,
+            }}
+          />
+          <Tab.Screen
+            name="Sessions"
+            component={BetaBlitzRoute as any}
+            options={{
+              tabBarIcon: () => <Icon source="lightning-bolt" size={24} />,
+            }}
+          />
+          <Tab.Screen
+            name="Settings"
+            component={SettingsRoute}
+            options={{
+              tabBarIcon: () => <Icon source="cog-outline" size={24} />,
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
     </PaperProvider>
   );
 }

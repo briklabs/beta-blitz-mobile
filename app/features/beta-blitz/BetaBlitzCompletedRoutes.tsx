@@ -6,13 +6,13 @@ export default function BetaBlitzCompletedRoutes() {
   const { completedRoutes, removeRouteByIndex, items } = useBetaBlitzContext();
   const completed = useMemo<{ label: string; value: string }[]>(
     () =>
-      completedRoutes.map((r) => {
-        const item = items.find((i) => i.value === r);
+      completedRoutes?.map((r) => {
+        const item = items.find((i) => i.value === r.value);
         return {
-          label: item?.label ?? `${r} points`,
-          value: String(r),
+          label: item?.label ?? `${r.value} points`,
+          value: String(r.value),
         };
-      }),
+      }) ?? [],
     [completedRoutes]
   );
 
@@ -21,26 +21,6 @@ export default function BetaBlitzCompletedRoutes() {
   }
 
   return (
-    // <View
-    //   style={{
-    //     flexDirection: "row",
-    //     gap: 4,
-    //     flexWrap: "wrap",
-    //   }}
-    // >
-    //   {completed.map((cr, i) => (
-    //     <Chip
-    //       key={i}
-    //       mode="outlined"
-    //       avatar={<Avatar.Text label={cr.value} size={24} />}
-    //       onPress={() => handlePress(i)}
-    //       onClose={editRouteIndex === i ? () => handleRemove(i) : undefined}
-    //     >
-    //       {cr.label}
-    //     </Chip>
-    //   ))}
-    // </View>
-
     <DataTable>
       <DataTable.Header>
         <DataTable.Title>Route</DataTable.Title>

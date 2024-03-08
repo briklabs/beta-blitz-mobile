@@ -1,34 +1,30 @@
 import React from "react";
 import { useBetaBlitzContext } from "./BetaBlitzContext";
-import { Button } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
 
 export default function BetaBlitzActions() {
-  const {
-    goal,
-    total,
-    inProgress,
-    startSession,
-    resetCalculator,
-    value,
-    addRoute,
-  } = useBetaBlitzContext();
+  const { inProgress, resetCalculator, selectedRoute, addRoute, endSession } =
+    useBetaBlitzContext();
+
+  const { colors } = useTheme();
   return (
     <>
       <Button
         mode="outlined"
-        onPress={resetCalculator}
+        onPress={endSession}
         style={{ marginRight: "auto" }}
+        textColor={colors.error}
       >
         Close
       </Button>
       <Button
         mode={inProgress ? "outlined" : "contained"}
-        onPress={startSession}
+        onPress={resetCalculator}
       >
         Restart
       </Button>
       {inProgress && (
-        <Button disabled={!value} mode="contained" onPress={addRoute}>
+        <Button disabled={!selectedRoute} mode="contained" onPress={addRoute}>
           Add
         </Button>
       )}
