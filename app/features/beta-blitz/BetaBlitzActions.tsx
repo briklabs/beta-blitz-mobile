@@ -3,31 +3,51 @@ import { useBetaBlitzContext } from "./BetaBlitzContext";
 import { Button, useTheme } from "react-native-paper";
 
 export default function BetaBlitzActions() {
-  const { inProgress, resetCalculator, selectedRoute, addRoute, endSession } =
-    useBetaBlitzContext();
+  const {
+    inProgress,
+    selectedRoute,
+    addRoute,
+    deleteSession,
+    closeSession,
+    endSession,
+  } = useBetaBlitzContext();
 
   const { colors } = useTheme();
+
+  if (inProgress)
+    return (
+      <>
+        <Button
+          mode="outlined"
+          onPress={endSession}
+          style={{ marginRight: "auto" }}
+        >
+          End Session
+        </Button>
+        <Button
+          disabled={!selectedRoute}
+          mode="contained"
+          onPress={addRoute}
+          style={{ flex: 1 }}
+        >
+          Add Route
+        </Button>
+      </>
+    );
+
   return (
     <>
       <Button
-        mode="outlined"
-        onPress={endSession}
+        mode="contained-tonal"
+        onPress={deleteSession}
         style={{ marginRight: "auto" }}
         textColor={colors.error}
       >
-        Close
+        Delete Session
       </Button>
-      <Button
-        mode={inProgress ? "outlined" : "contained"}
-        onPress={resetCalculator}
-      >
-        Restart
+      <Button mode="outlined" onPress={closeSession} style={{ flex: 1 }}>
+        Close Session
       </Button>
-      {inProgress && (
-        <Button disabled={!selectedRoute} mode="contained" onPress={addRoute}>
-          Add
-        </Button>
-      )}
     </>
   );
 }

@@ -9,8 +9,8 @@ export default function BetaBlitzRouteOptions() {
     <ScrollView horizontal contentContainerStyle={{ gap: 4 }}>
       {items.map((route, i) => (
         <Button
-          mode={route.value === selectedRoute ? "contained" : "contained-tonal"}
           key={i}
+          mode={route.value === selectedRoute ? "contained" : "contained-tonal"}
           onPress={() => setSelectedRoute(route.value)}
         >
           {route.label}

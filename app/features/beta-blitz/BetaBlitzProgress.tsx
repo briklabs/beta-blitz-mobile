@@ -18,8 +18,12 @@ function BetaBlitzProgress() {
 }
 
 BetaBlitzProgress.Action = function () {
-  const { toggleGoalDialog } = useBetaBlitzContext();
-  return <Button onPress={toggleGoalDialog}>Update Goal</Button>;
+  const { toggleGoalDialog, inProgress } = useBetaBlitzContext();
+  return (
+    <Button onPress={toggleGoalDialog} disabled={!inProgress}>
+      Update Goal
+    </Button>
+  );
 };
 
 export default BetaBlitzProgress;

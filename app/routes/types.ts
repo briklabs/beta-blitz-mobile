@@ -2,7 +2,7 @@ import { MaterialBottomTabScreenProps } from "react-native-paper";
 
 export type TabNavParamList = {
   Home: undefined;
-  Sessions: { workoutId: number } | undefined;
+  Sessions: { workoutId: number | undefined } | undefined;
   Settings: undefined;
 };
 

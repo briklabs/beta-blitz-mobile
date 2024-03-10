@@ -11,6 +11,8 @@ interface BetaBlitzCotextInterface {
   addRoute: () => void;
   removeRouteByIndex: (i: number) => void;
   resetCalculator: () => void;
+  closeSession: () => void;
+  deleteSession: () => void;
   endSession: () => void;
   inProgress: boolean;
   setGoal: (num: number) => void;

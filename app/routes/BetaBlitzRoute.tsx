@@ -4,11 +4,12 @@ import { SessionsScreenProps } from "./types";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   createWorkout,
+  deleteWorkout,
   getWorkoutById,
   updateWorkout,
-} from "../db/beta-blitz.service";
+} from "../db/beta-blitz.repo";
 import { BetaBlitzType } from "../db/beta-blitz-validation";
-import { Alert, Platform, SafeAreaView, View } from "react-native";
+import { Alert, Platform, SafeAreaView } from "react-native";
 import { Button } from "react-native-paper";
 import { createTables } from "../db/beta-blitz.repo";
 
@@ -16,17 +17,23 @@ const BetaBlitzRoute = ({ route, navigation }: SessionsScreenProps) => {
   useEffect(() => createTables(), []);
   const [workout, setWorkout] = useState<BetaBlitzType | null>(null);
 
-  useFocusEffect(() => {
-    if (route.params?.workoutId) {
-      getWorkoutById(route.params?.workoutId, (w) => setWorkout(w));
+  const { workoutId } = route.params ?? {};
+  useEffect(() => {
+    if (workoutId) {
+      getWorkoutById(workoutId, (w) => setWorkout(w));
+      return;
     }
-  });
+  }, [workoutId]);
 
   const startSession = () => {
-    createWorkout(20, (w) => setWorkout(w));
+    createWorkout(20, (w) => {
+      console.log("start session", w);
+      setWorkout(w);
+    });
   };
 
   function handleWorkoutUpdate(payload: BetaBlitzType) {
+    if (!workout) return;
     updateWorkout(
       payload.id,
       {
@@ -34,9 +41,12 @@ const BetaBlitzRoute = ({ route, navigation }: SessionsScreenProps) => {
         endTimestamp: payload.endTimestamp,
         goal: payload.goal,
       },
-      (response) => {
-        console.log("update confirmed", response);
-        setWorkout(workout);
+      () => {
+        console.log("update confirmed");
+        setWorkout({
+          ...workout,
+          ...payload,
+        });
       }
     );
   }
@@ -64,47 +74,65 @@ const BetaBlitzRoute = ({ route, navigation }: SessionsScreenProps) => {
   }
 
   function handleClose() {
-    console.log("hi");
-    // if (!workout) {
-    //   navigation.jumpTo("Home");
-    //   return;
-    // }
-
-    // if (!workout?.endTimestamp) {
-    //   updateWorkout(
-    //     workout.id,
-    //     {
-    //       completedRoutes: workout.completedRoutes,
-    //       endTimestamp: new Date(),
-    //       goal: workout.goal,
-    //     },
-    //     (response) => {
-    //       console.log("closed", response);
-    //       navigation.jumpTo("Home");
-    //     }
-    //   );
-    // }
+    setWorkout(null);
     navigation.jumpTo("Home");
   }
 
-  if (workout)
-    return (
-      <SafeAreaView>
+  function handleDelete() {
+    if (!workout) return;
+    deleteWorkout(workout.id, handleClose);
+  }
+
+  function handleEnd() {
+    if (!workout) return handleClose();
+
+    if (!workout?.endTimestamp) {
+      const endTimestamp = new Date();
+      updateWorkout(
+        workout.id,
+        {
+          completedRoutes: workout.completedRoutes,
+          endTimestamp,
+          goal: workout.goal,
+        },
+        () => {
+          console.log("closed");
+          setWorkout({
+            ...workout,
+            endTimestamp,
+          });
+        }
+      );
+    }
+  }
+
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        justifyContent: "center",
+      }}
+    >
+      {workout ? (
         <BetaBlitz
           workout={workout}
           onUpdateWorkout={handleWorkoutUpdate}
           onReset={handleReset}
           onClose={handleClose}
+          onEnd={handleEnd}
+          onDelete={handleDelete}
         />
-      </SafeAreaView>
-    );
-
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Button mode="contained" onPress={startSession} icon="lightning-bolt">
-        Start
-      </Button>
-    </View>
+      ) : (
+        <Button
+          mode="contained"
+          onPress={startSession}
+          icon="lightning-bolt"
+          style={{ alignSelf: "center" }}
+        >
+          Start
+        </Button>
+      )}
+    </SafeAreaView>
   );
 };
 

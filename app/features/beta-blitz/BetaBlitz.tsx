@@ -16,6 +16,8 @@ interface BetaBlitzProps {
   workout: BetaBlitzType;
   onReset: () => void;
   onClose: () => void;
+  onEnd: () => void;
+  onDelete: () => void;
   onUpdateWorkout: (w: BetaBlitzType) => void;
 }
 export default function BetaBlitz({
@@ -23,6 +25,8 @@ export default function BetaBlitz({
   onUpdateWorkout,
   onReset,
   onClose,
+  onEnd,
+  onDelete,
 }: BetaBlitzProps) {
   const total = useMemo(
     () =>
@@ -113,11 +117,10 @@ export default function BetaBlitz({
     selectedRoute,
     addRoute,
     removeRouteByIndex,
-    endSession: () => {
-      console.log("ok?");
-      onClose();
-    },
+    endSession: onEnd,
+    closeSession: onClose,
     resetCalculator: onReset,
+    deleteSession: onDelete,
     inProgress,
     setGoal,
     setSelectedRoute,
@@ -143,7 +146,8 @@ export default function BetaBlitz({
               style={{
                 flex: 1,
                 alignItems: "center",
-                justifyContent: "center",
+                // justifyContent: "center",
+                height: "100%",
               }}
             >
               <Card.Content>
@@ -167,7 +171,7 @@ export default function BetaBlitz({
                 <BetaBlitzStopwatch />
               </Card.Content>
             </Card>
-            <Card style={{ flex: 1 }}>
+            <Card style={{ flex: 1, height: "100%" }}>
               <Card.Title title="Hardest Route" />
               <Card.Content>
                 <BetaBlitzHardestRoute />
@@ -175,7 +179,7 @@ export default function BetaBlitz({
             </Card>
           </View>
           <Card style={{ flex: 1 }}>
-            <View style={{ maxHeight: "45vh" as DimensionValue }}>
+            <View style={{}}>
               <ScrollView>
                 <BetaBlitzCompletedRoutes />
               </ScrollView>
@@ -183,9 +187,11 @@ export default function BetaBlitz({
           </Card>
         </View>
         <Card>
-          <Card.Content>
-            <BetaBlitzRouteOptions />
-          </Card.Content>
+          {inProgress && (
+            <Card.Content>
+              <BetaBlitzRouteOptions />
+            </Card.Content>
+          )}
           <Card.Actions style={{ gap: 4 }}>
             <BetaBlitzActions />
           </Card.Actions>
