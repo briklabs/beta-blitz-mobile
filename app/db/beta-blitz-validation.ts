@@ -44,7 +44,9 @@ const updateBetaBlitzValidationSchema = betaBlitzSchema
   .merge(z.object({ completedRoutes: completedRoutesSchema }))
   .transform((obj) => ({
     ...obj,
-    completedRoutes: JSON.stringify(obj.completedRoutes ?? null),
+    completedRoutes: obj.completedRoutes
+      ? JSON.stringify(obj.completedRoutes)
+      : null,
     endTimestamp: obj.endTimestamp?.toISOString() ?? null,
   }));
 
